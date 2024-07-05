@@ -30,7 +30,7 @@ export class FilesHandler {
 		for (let fileRegex of this.ignoreFilesRegex) {
 			let testResult = fileRegex.test(path)
 			// console.log(path,fileRegex,testResult)
-			if(testResult) {
+			if (testResult) {
 				return true;
 			}
 		}
@@ -117,8 +117,11 @@ export class FilesHandler {
 	}
 
 	getNewAttachmentPath(oldAttachmentPath: string, notePath: string, subfolderName: string): string {
+		let configAttachmentFolderPath = (this.app.vault as any).getConfig("attachmentFolderPath");
+		let resolvedRootFolderPath = configAttachmentFolderPath.startsWith("./") ? configAttachmentFolderPath.replace(/^\.\//, path.dirname(notePath)) : configAttachmentFolderPath;
 		let resolvedSubFolderName = subfolderName.replace(/\${filename}/g, path.basename(notePath, ".md"));
-		let newPath = (resolvedSubFolderName == "") ? path.dirname(notePath) : path.join(path.dirname(notePath), resolvedSubFolderName);
+		// let newPath = (resolvedSubFolderName == "") ? path.dirname(notePath) : path.join(path.dirname(notePath), resolvedSubFolderName);
+		let newPath = (resolvedSubFolderName == "") ? resolvedRootFolderPath : path.join(resolvedRootFolderPath, resolvedSubFolderName);
 		newPath = Utils.normalizePathForFile(path.join(newPath, path.basename(oldAttachmentPath)));
 		return newPath;
 	}
